@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#88000000"
+    android:clickable="true">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:layout_margin="32dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/checkboxes_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <leonardo2204.com.materialnotes.view.EndDrawableEditText
+                android:id="@+id/new_item"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:hint="Add new item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_action_add"
+                android:drawableEnd="@drawable/ic_action_add"/>
+
+        </FrameLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</FrameLayout>

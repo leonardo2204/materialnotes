@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/fab_camera"
+        android:icon="@drawable/ic_action_camera"
+        android:title="Take a picture" />
+    <item android:id="@+id/fab_image"
+        android:icon="@drawable/ic_image"
+        android:title="Select an image" />
+    <item android:id="@+id/fab_drawing"
+        android:icon="@drawable/ic_edit"
+        android:title="Draw something" />
+    <item android:id="@+id/fab_mic"
+        android:icon="@drawable/ic_mic"
+        android:title="Record an audio" />
+    <item android:id="@+id/fab_checkbox"
+        android:icon="@drawable/ic_bullet_black"
+        android:title="Checkboxes"/>
+</menu>

@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "leonardo2204.com.materialnotes"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':library')
+
+    compile('com.hannesdorfmann:adapterdelegates2:2.0.1') {
+        exclude group: "com.android.support"
+    }
+
+    compile rootProject.ext.supportV4
+    compile rootProject.ext.supportDesign
+    compile rootProject.ext.supportAnnotations
+    compile rootProject.ext.supportAppCompat
+    compile rootProject.ext.supportRecyclerView
+    compile rootProject.ext.supportCardview
+
+    compile rootProject.ext.butterknife
+    //compile rootProject.ext.fabSpeedDial
+
+    compile rootProject.ext.conductor
+    compile rootProject.ext.easyImage
+
+    compile rootProject.ext.glide
+
+    compile rootProject.ext.dagger
+
+    apt rootProject.ext.butterknifeCompiler
+    apt rootProject.ext.daggerCompiler
+    provided rootProject.ext.javaxAnnotation
+
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support:support-annotations:23.4.0'
+}
