@@ -24,7 +24,6 @@ import leonardo2204.com.materialnotes.MockClass;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.ItemAdapter;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
-import leonardo2204.com.materialnotes.decorator.SpanItemDecorator;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 /**
@@ -48,6 +47,7 @@ public class ItemsController extends BaseController {
         }
     };
 
+
     @Override
     protected View inflateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         return inflater.inflate(R.layout.items_controller, container, false);
@@ -59,10 +59,11 @@ public class ItemsController extends BaseController {
     }
 
     private void setupUI(){
-        StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         setupAdapter();
         setupFabNavigation();
-        rvItems.addItemDecoration(new SpanItemDecorator(12, 12));
+        sglm.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        //rvItems.addItemDecoration(new SpanItemDecorator(12, 12));
         rvItems.setLayoutManager(sglm);
         rvItems.setAdapter(itemAdapter);
     }
@@ -70,7 +71,6 @@ public class ItemsController extends BaseController {
     private void setupAdapter() {
         itemAdapter = new ItemAdapter(getActivity(), MockClass.mockList());
         itemAdapter.setOnItemClickListener(onItemClickListener);
-
     }
 
     private void setupFabNavigation() {
@@ -99,7 +99,8 @@ public class ItemsController extends BaseController {
                     case R.id.fab_checkbox:
                         getChildRouter(overlayContainer, null)
                                 .setPopsLastView(true)
-                                .setRoot(RouterTransaction.with(new CheckboxController()));
+                                .pushController(RouterTransaction.with(new CheckboxController()));
+                        return true;
                     default:
                         return false;
                 }

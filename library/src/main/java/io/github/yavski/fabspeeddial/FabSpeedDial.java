@@ -30,7 +30,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -64,54 +63,23 @@ import io.github.yavski.fabmenu.R;
 @CoordinatorLayout.DefaultBehavior(FabSpeedDialBehaviour.class)
 public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
 
-    /**
-     * Called to notify of close and selection changes.
-     */
-    public interface MenuListener {
-
-        /**
-         * Called just before the menu items are about to become visible.
-         * Don't block as it's called on the main thread.
-         *
-         * @param navigationMenu The menu containing all menu items.
-         * @return You must return true for the menu to be displayed;
-         * if you return false it will not be shown.
-         */
-        boolean onPrepareMenu(NavigationMenu navigationMenu);
-
-        /**
-         * Called when a menu item is selected.
-         *
-         * @param menuItem The menu item that is selected
-         * @return whether the menu item selection was handled
-         */
-        boolean onMenuItemSelected(MenuItem menuItem);
-
-        void onMenuClosed();
-    }
-
-    private static final String TAG = FabSpeedDial.class.getSimpleName();
-
-    private static final int VSYNC_RHYTHM = 6;
-
     public static final FastOutSlowInInterpolator FAST_OUT_SLOW_IN_INTERPOLATOR =
             new FastOutSlowInInterpolator();
-
     public static final int BOTTOM_END = 0;
     public static final int BOTTOM_START = 1;
     public static final int TOP_END = 2;
     public static final int TOP_START = 3;
+    private static final String TAG = FabSpeedDial.class.getSimpleName();
+    private static final int VSYNC_RHYTHM = 6;
     private static final int DEFAULT_MENU_POSITION = BOTTOM_END;
-
+    FloatingActionButton fab;
     private MenuListener menuListener;
     private NavigationMenu navigationMenu;
     private Map<FloatingActionButton, MenuItem> fabMenuItemMap;
     private Map<CardView, MenuItem> cardViewMenuItemMap;
 
     private LinearLayout menuItemsLayout;
-    FloatingActionButton fab;
     private View touchGuard = null;
-
     private int menuId;
     private int fabGravity;
     private Drawable fabDrawable;
@@ -124,9 +92,7 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
     private int miniFabTitleTextColor;
     private Drawable touchGuardDrawable;
     private boolean useTouchGuard;
-
     private boolean isAnimating;
-
     //Variable to hold wheter the menu was open or not on config change
     private boolean shouldOpenMenu;
 
@@ -267,7 +233,7 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
         // Needed in order to intercept key events
         setFocusableInTouchMode(true);
 
-        if (useTouchGuard) {
+        if (useTouchGuard && touchGuard == null) {
             ViewParent parent = getParent();
 
             touchGuard = new View(getContext());
@@ -301,8 +267,14 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
 
         setOnClickListener(this);
 
-        if(shouldOpenMenu)
+        if (shouldOpenMenu && !isMenuOpen())
             openMenu();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        closeMenuNoAnimation();
+        super.onDetachedFromWindow();
     }
 
     private void newNavigationMenu() {
@@ -465,6 +437,20 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
         return fabMenuItem;
     }
 
+    public void closeMenuNoAnimation() {
+        if (!ViewCompat.isAttachedToWindow(this))
+            return;
+
+        if (isMenuOpen()) {
+            fab.setSelected(false);
+            if (touchGuard != null) touchGuard.setVisibility(GONE);
+            menuItemsLayout.removeAllViews();
+            if (menuListener != null) {
+                menuListener.onMenuClosed();
+            }
+        }
+    }
+
     private void removeFabMenuItems() {
         if (touchGuard != null) touchGuard.setVisibility(GONE);
 
@@ -589,8 +575,45 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
         return super.dispatchKeyEventPreIme(event);
     }
 
+    /**
+     * Called to notify of close and selection changes.
+     */
+    public interface MenuListener {
+
+        /**
+         * Called just before the menu items are about to become visible.
+         * Don't block as it's called on the main thread.
+         *
+         * @param navigationMenu The menu containing all menu items.
+         * @return You must return true for the menu to be displayed;
+         * if you return false it will not be shown.
+         */
+        boolean onPrepareMenu(NavigationMenu navigationMenu);
+
+        /**
+         * Called when a menu item is selected.
+         *
+         * @param menuItem The menu item that is selected
+         * @return whether the menu item selection was handled
+         */
+        boolean onMenuItemSelected(MenuItem menuItem);
+
+        void onMenuClosed();
+    }
+
     static class SavedState extends BaseSavedState {
 
+        public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel parcel) {
+                return new SavedState(parcel);
+            }
+
+            @Override
+            public SavedState[] newArray(int i) {
+                return new SavedState[i];
+            }
+        };
         boolean isShowingMenu;
 
         public SavedState(Parcel source) {
@@ -607,18 +630,6 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
             super.writeToParcel(out, flags);
             out.writeInt(this.isShowingMenu ? 1 : 0);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel parcel) {
-                return new SavedState(parcel);
-            }
-
-            @Override
-            public SavedState[] newArray(int i) {
-                return new SavedState[i];
-            }
-        };
 
     }
 

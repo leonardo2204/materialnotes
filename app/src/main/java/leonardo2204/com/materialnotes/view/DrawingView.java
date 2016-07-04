@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.ThumbnailUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,14 +17,16 @@ import android.view.View;
 
 public class DrawingView extends View {
 
+    private static final float TOUCH_TOLERANCE = 4;
     public int width;
     public  int height;
+    Context context;
     private Bitmap mBitmap;
     private Canvas mCanvas;
     private Path mPath;
     private Paint mBitmapPaint;
-    Context context;
     private Paint paint;
+    private float mX, mY;
 
     public DrawingView(Context context) {
         this(context, null, 0);
@@ -45,11 +48,16 @@ public class DrawingView extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.MITER);
         paint.setStrokeWidth(4f);
+
+        setDrawingCacheEnabled(true);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
+        width = w;
+        height = h;
 
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
@@ -59,12 +67,23 @@ public class DrawingView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint);
-        canvas.drawPath( mPath,  paint);
+        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+        canvas.drawPath(mPath, paint);
     }
 
-    private float mX, mY;
-    private static final float TOUCH_TOLERANCE = 4;
+    public Bitmap getDrawingBitmap() {
+        Bitmap bmp = getDrawingCache();
+        bmp = ThumbnailUtils.extractThumbnail(bmp, 512, 512);
+
+        return bmp;
+    }
+
+    public void clearCanvas() {
+        setDrawingCacheEnabled(false);
+        onSizeChanged(width, height, width, height);
+        invalidate();
+        setDrawingCacheEnabled(true);
+    }
 
     private void touch_start(float x, float y) {
         mPath.reset();
