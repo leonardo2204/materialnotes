@@ -47,12 +47,12 @@ public class EndDrawableEditText extends AppCompatEditText {
                     if (event.getRawX() >= leftEdgeRightDrawable) {
                         if (EndDrawableEditText.this.onDrawableClickListener != null) {
                             EndDrawableEditText.this.onDrawableClickListener.onEndDrawableClick();
-                            return true;
                         }
+                        return true;
                     }
                 }
 
-                return EndDrawableEditText.super.onTouchEvent(event);
+                return false;
             }
         });
     }

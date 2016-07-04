@@ -9,30 +9,31 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:layout_margin="32dp">
+        android:layout_margin="32dp"
+        android:background="@android:color/white">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="16dp">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:id="@+id/checkboxes_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
 
             <leonardo2204.com.materialnotes.view.EndDrawableEditText
                 android:id="@+id/new_item"
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:hint="Add new item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/checkboxes_container"
+                android:drawableEnd="@drawable/ic_action_add"
                 android:drawableRight="@drawable/ic_action_add"
-                android:drawableEnd="@drawable/ic_action_add"/>
+                android:hint="Add new item" />
 
-        </FrameLayout>
+        </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

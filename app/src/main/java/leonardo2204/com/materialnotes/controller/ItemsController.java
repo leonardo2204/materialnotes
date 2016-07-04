@@ -93,13 +93,13 @@ public class ItemsController extends BaseController {
                         return true;
                     case R.id.fab_drawing:
                         getParentController().getChildRouters().get(0).pushController(RouterTransaction.with(new DrawingController()));
-                                //.pushChangeHandler(new FadeChangeHandler())
-                                //.popChangeHandler(new FadeChangeHandler()));
+                        //.pushChangeHandler(new FadeChangeHandler())
+                        //.popChangeHandler(new FadeChangeHandler()));
                         return true;
                     case R.id.fab_checkbox:
-                        getChildRouter(overlayContainer, null)
-                                .setPopsLastView(true)
-                                .pushController(RouterTransaction.with(new CheckboxController()));
+                        getRouter().pushController(RouterTransaction.with(new CheckboxController())
+                                .pushChangeHandler(new FadeChangeHandler(false))
+                                .popChangeHandler(new FadeChangeHandler()));
                         return true;
                     default:
                         return false;
