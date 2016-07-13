@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Stack;
+
 /**
  * Created by leonardo on 6/30/16.
  */
@@ -20,13 +22,15 @@ public class DrawingView extends View {
     private static final float TOUCH_TOLERANCE = 4;
     public int width;
     public  int height;
-    Context context;
+    private Context context;
     private Bitmap mBitmap;
     private Canvas mCanvas;
     private Path mPath;
     private Paint mBitmapPaint;
     private Paint paint;
     private float mX, mY;
+    private Stack<Path> pathDeque = new Stack<>();
+    private OnDrawLine onDrawLine;
 
     public DrawingView(Context context) {
         this(context, null, 0);
@@ -52,6 +56,10 @@ public class DrawingView extends View {
         setDrawingCacheEnabled(true);
     }
 
+    public void setOnDrawLine(OnDrawLine onDrawLine) {
+        this.onDrawLine = onDrawLine;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -67,8 +75,10 @@ public class DrawingView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-        canvas.drawPath(mPath, paint);
+        // canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+        for (Path path : pathDeque) {
+            canvas.drawPath(path, paint);
+        }
     }
 
     public Bitmap getDrawingBitmap() {
@@ -80,9 +90,21 @@ public class DrawingView extends View {
 
     public void clearCanvas() {
         setDrawingCacheEnabled(false);
+        pathDeque.clear();
         onSizeChanged(width, height, width, height);
         invalidate();
         setDrawingCacheEnabled(true);
+    }
+
+    public void undoDrawing() {
+        setDrawingCacheEnabled(false);
+        pathDeque.pop();
+        invalidate();
+        setDrawingCacheEnabled(true);
+    }
+
+    public boolean canUndo() {
+        return !pathDeque.isEmpty();
     }
 
     private void touch_start(float x, float y) {
@@ -104,10 +126,14 @@ public class DrawingView extends View {
 
     private void touch_up() {
         mPath.lineTo(mX, mY);
+        pathDeque.add(mPath);
         // commit the path to our offscreen
         mCanvas.drawPath(mPath,  paint);
+        mPath = new Path();
+        if (onDrawLine != null)
+            onDrawLine.hasLineOnScreen(canUndo());
         // kill this so we don't double draw
-        mPath.reset();
+        //mPath.reset();
     }
 
     @Override
@@ -131,4 +157,9 @@ public class DrawingView extends View {
         }
         return true;
     }
+
+    public interface OnDrawLine {
+        void hasLineOnScreen(boolean hasLine);
+    }
+
 }

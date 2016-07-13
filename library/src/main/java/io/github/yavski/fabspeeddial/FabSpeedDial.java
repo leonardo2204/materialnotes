@@ -578,7 +578,7 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
     /**
      * Called to notify of close and selection changes.
      */
-    public interface MenuListener {
+    public static abstract class MenuListener {
 
         /**
          * Called just before the menu items are about to become visible.
@@ -588,7 +588,9 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
          * @return You must return true for the menu to be displayed;
          * if you return false it will not be shown.
          */
-        boolean onPrepareMenu(NavigationMenu navigationMenu);
+        public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+            return true;
+        }
 
         /**
          * Called when a menu item is selected.
@@ -596,9 +598,10 @@ public class FabSpeedDial extends LinearLayout implements View.OnClickListener {
          * @param menuItem The menu item that is selected
          * @return whether the menu item selection was handled
          */
-        boolean onMenuItemSelected(MenuItem menuItem);
+        public abstract boolean onMenuItemSelected(MenuItem menuItem);
 
-        void onMenuClosed();
+        public void onMenuClosed() {
+        }
     }
 
     static class SavedState extends BaseSavedState {

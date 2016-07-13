@@ -35,7 +35,9 @@ dependencies {
     compile rootProject.ext.supportRecyclerView
     compile rootProject.ext.supportCardview
 
-    compile rootProject.ext.butterknife
+    compile(rootProject.ext.butterknife) {
+        exclude group: "com.android.support"
+    }
     //compile rootProject.ext.fabSpeedDial
 
     compile rootProject.ext.conductor

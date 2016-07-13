@@ -3,7 +3,6 @@ package leonardo2204.com.materialnotes.controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -75,10 +74,6 @@ public class ItemsController extends BaseController {
 
     private void setupFabNavigation() {
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
-            @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                return true;
-            }
 
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
@@ -92,9 +87,9 @@ public class ItemsController extends BaseController {
                         registerForActivityResult(EasyImage.REQ_PICK_PICTURE_FROM_GALLERY);
                         return true;
                     case R.id.fab_drawing:
-                        getParentController().getChildRouters().get(0).pushController(RouterTransaction.with(new DrawingController()));
-                        //.pushChangeHandler(new FadeChangeHandler())
-                        //.popChangeHandler(new FadeChangeHandler()));
+                        getParentController().getRouter().pushController(RouterTransaction.with(new DrawingController())
+                                .pushChangeHandler(new FadeChangeHandler())
+                                .popChangeHandler(new FadeChangeHandler()));
                         return true;
                     case R.id.fab_checkbox:
                         getRouter().pushController(RouterTransaction.with(new CheckboxController())
@@ -104,11 +99,6 @@ public class ItemsController extends BaseController {
                     default:
                         return false;
                 }
-            }
-
-            @Override
-            public void onMenuClosed() {
-
             }
         });
     }
