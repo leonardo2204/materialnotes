@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.media.ThumbnailUtils;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -75,12 +77,11 @@ public class DrawingView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        // canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-        canvas.drawPath(mPath, paint);
         for (Path path : pathStack) {
             canvas.drawPath(path, paint);
         }
+
+        canvas.drawPath(mPath, paint);
     }
 
     public Bitmap getDrawingBitmap() {
@@ -165,8 +166,61 @@ public class DrawingView extends View {
         return true;
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+
+        ss.pathStack = this.pathStack;
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(((SavedState) state).getSuperState());
+
+        this.pathStack = ss.pathStack;
+    }
+
     public interface OnDrawLine {
         void hasLineOnScreen(boolean hasLine);
+    }
+
+    private static class SavedState extends BaseSavedState {
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel source) {
+                return new SavedState(source);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+        Stack<Path> pathStack;
+
+        public SavedState(Parcel source) {
+            super(source);
+            this.pathStack = (Stack<Path>) source.readSerializable();
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeSerializable(this.pathStack);
+        }
     }
 
 }

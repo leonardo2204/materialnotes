@@ -3,7 +3,10 @@ package leonardo2204.com.materialnotes.controller;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,8 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
+import butterknife.BindDrawable;
 import butterknife.BindView;
+import butterknife.OnClick;
 import leonardo2204.com.materialnotes.DetachableClickListener;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
@@ -30,6 +36,14 @@ public class DrawingController extends BaseController {
     Toolbar toolbar;
     @BindView(R.id.drawing_view)
     DrawingView drawingView;
+    @BindView(R.id.drawing_options_bottom)
+    NestedScrollView drawingBottomSheet;
+    @BindView(R.id.drawing_options_thick)
+    ImageButton thickButton;
+    @BindDrawable(R.drawable.ic_brush)
+    Drawable brush;
+
+    private BottomSheetBehavior bottomSheetBehavior;
     private boolean canUndo = false;
 
     public DrawingController() {
@@ -45,6 +59,7 @@ public class DrawingController extends BaseController {
     protected void onViewCreated(@NonNull View v) {
         super.onViewCreated(v);
         setupToolbar();
+        setupBottomSheet();
         drawingView.setOnDrawLine(new DrawingView.OnDrawLine() {
             @Override
             public void hasLineOnScreen(boolean hasLine) {
@@ -83,6 +98,11 @@ public class DrawingController extends BaseController {
         }
     }
 
+    @OnClick({R.id.drawing_options_thick, R.id.drawing_options_brush, R.id.drawing_options_paint})
+    protected void onDrawingOptions() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
     private void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         final ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -91,6 +111,11 @@ public class DrawingController extends BaseController {
             toolbar.setTitle(null);
             toolbar.setHomeAsUpIndicator(R.drawable.ic_back);
         }
+    }
+
+    private void setupBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(drawingBottomSheet);
+        bottomSheetBehavior.setPeekHeight(brush.getIntrinsicHeight());
     }
 
     private void confirmClearDialog() {

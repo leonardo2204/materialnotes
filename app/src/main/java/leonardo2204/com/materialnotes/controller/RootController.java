@@ -1,6 +1,6 @@
 package leonardo2204.com.materialnotes.controller;
 
-import android.support.annotation.IdRes;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -8,8 +8,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,28 +19,38 @@ import com.bluelinelabs.conductor.ControllerChangeType;
 import com.bluelinelabs.conductor.Router;
 import com.bluelinelabs.conductor.RouterTransaction;
 
+import javax.inject.Inject;
+
+import butterknife.BindDrawable;
 import butterknife.BindView;
+import leonardo2204.com.materialnotes.ActionBarOwner;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
-import leonardo2204.com.materialnotes.listener.NavigationListener;
+import leonardo2204.com.materialnotes.di.component.DaggerRootComponent;
+import leonardo2204.com.materialnotes.di.component.RootComponent;
+import leonardo2204.com.materialnotes.di.module.RootModule;
 
 /**
  * Created by leonardo on 6/29/16.
  */
 
-public class RootController extends BaseController implements NavigationListener {
+public class RootController extends BaseController implements ActionBarOwner.ActionBarCallbacks {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.child_container)
-    FrameLayout childContainer;
     @BindView(R.id.navigation_view)
     protected NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     protected DrawerLayout drawerLayout;
-
+    @Inject
+    protected ActionBarOwner actionBarOwner;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.child_container)
+    FrameLayout childContainer;
+    @BindDrawable(R.drawable.ic_menu)
+    Drawable menuDrawable;
     private int menuItemId;
     private Router childRouter;
+    private RootComponent rootComponent;
 
     public RootController() {
         setHasOptionsMenu(true);
@@ -59,10 +67,20 @@ public class RootController extends BaseController implements NavigationListener
     }
 
     @Override
+    protected void onCreate() {
+        rootComponent = DaggerRootComponent.builder().rootModule(new RootModule()).build();
+        rootComponent.inject(this);
+    }
+
+    public RootComponent getRootComponent() {
+        return rootComponent;
+    }
+
+    @Override
     protected void onChangeEnded(@NonNull ControllerChangeHandler changeHandler, @NonNull ControllerChangeType changeType) {
         if(childContainer != null && getChildRouter(childContainer,null) != null && !getChildRouter(childContainer,null).hasRootController())
             getChildRouter(childContainer,null).setRoot(RouterTransaction.with(new ItemsController()));
-            //getChildRouter(childContainer,null).pushController(RouterTransaction.with(new ItemsController()));
+        //getChildRouter(childContainer,null).pushController(RouterTransaction.with(new ItemsController()));
     }
 
     @Override
@@ -75,16 +93,18 @@ public class RootController extends BaseController implements NavigationListener
         setupUI();
     }
 
+    @Override
+    protected void onDestroy() {
+        actionBarOwner.setActionBarCallbacks(null);
+        actionBarOwner = null;
+        super.onDestroy();
+    }
+
     private void setupUI() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        final ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (toolbar != null) {
-            toolbar.setDisplayHomeAsUpEnabled(true);
-            toolbar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        }
-
+        actionBarOwner.setActionBarCallbacks(this);
+        actionBarOwner.setConfig(new ActionBarOwner.Config(true, true, menuDrawable, "Items"));
         childRouter = getChildRouter(childContainer, null);
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -130,12 +150,30 @@ public class RootController extends BaseController implements NavigationListener
     }
 
     @Override
-    public void setToolbarTitle(String title) {
-
+    public void setShowHomeEnabled(boolean enabled) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setDisplayShowHomeEnabled(enabled);
     }
 
     @Override
-    public void setMenuItemSelected(@IdRes int menuId) {
+    public void setShowUpButtonEnabled(boolean enabled) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(enabled);
+    }
 
+    @Override
+    public void setHomeUpDrawable(Drawable drawable) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setHomeAsUpIndicator(drawable);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(title);
     }
 }

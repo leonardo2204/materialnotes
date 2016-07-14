@@ -23,7 +23,7 @@ ext {
     glide = 'com.github.bumptech.glide:glide:3.7.0'
     easyImage = 'com.github.jkwiecien:EasyImage:1.2.3'
 
-    rxJava = 'io.reactivex:rxjava:1.1.6'
+    rxJava = 'io.reactivex:rxjava:1.1.7'
     rxAndroid = 'io.reactivex:rxandroid:1.2.1'
     rxLifecycle = 'com.trello:rxlifecycle:0.5.0'
 

@@ -47,6 +47,11 @@ dependencies {
 
     compile rootProject.ext.dagger
 
+    compile rootProject.ext.rxJava
+    compile rootProject.ext.rxAndroid
+
+    debugCompile rootProject.ext.leakCanary
+
     apt rootProject.ext.butterknifeCompiler
     apt rootProject.ext.daggerCompiler
     provided rootProject.ext.javaxAnnotation

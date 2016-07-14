@@ -1,5 +1,6 @@
 package leonardo2204.com.materialnotes.controller.base;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,14 +25,14 @@ public abstract class BaseController extends Controller {
     @NonNull
     @Override
     protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-        View view = inflateView(inflater, container);
-        unbinder = ButterKnife.bind(this, view);
-        onViewCreated(view);
-
         if (!created) {
             created = true;
             onCreate();
         }
+
+        View view = inflateView(inflater, container);
+        unbinder = ButterKnife.bind(this, view);
+        onViewCreated(view);
 
         return view;
     }
@@ -42,6 +43,7 @@ public abstract class BaseController extends Controller {
     protected void onViewCreated(@NonNull View v) {
     }
 
+    @CallSuper
     @Override
     protected void onDestroyView(View view) {
         super.onDestroyView(view);
