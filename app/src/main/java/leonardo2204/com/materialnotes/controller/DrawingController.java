@@ -54,12 +54,6 @@ public class DrawingController extends BaseController {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.menu_paint_undo).setEnabled(canUndo);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.controller_drawing_menu, menu);
     }
@@ -76,7 +70,10 @@ public class DrawingController extends BaseController {
                 return true;
             case R.id.menu_paint_undo:
                 drawingView.undoDrawing();
-                item.setEnabled(drawingView.canUndo());
+                //item.setEnabled(drawingView.canUndo());
+                return true;
+            case R.id.menu_paint_redo:
+                drawingView.redoDrawing();
                 return true;
             case android.R.id.home:
                 getRouter().popCurrentController();

@@ -29,7 +29,8 @@ public class DrawingView extends View {
     private Paint mBitmapPaint;
     private Paint paint;
     private float mX, mY;
-    private Stack<Path> pathDeque = new Stack<>();
+    private Stack<Path> pathStack = new Stack<>();
+    private Stack<Path> redoPathStack = new Stack<>();
     private OnDrawLine onDrawLine;
 
     public DrawingView(Context context) {
@@ -67,8 +68,8 @@ public class DrawingView extends View {
         width = w;
         height = h;
 
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
+        //mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        //mCanvas = new Canvas(mBitmap);
     }
 
     @Override
@@ -76,7 +77,8 @@ public class DrawingView extends View {
         super.onDraw(canvas);
 
         // canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-        for (Path path : pathDeque) {
+        canvas.drawPath(mPath, paint);
+        for (Path path : pathStack) {
             canvas.drawPath(path, paint);
         }
     }
@@ -90,7 +92,7 @@ public class DrawingView extends View {
 
     public void clearCanvas() {
         setDrawingCacheEnabled(false);
-        pathDeque.clear();
+        pathStack.clear();
         onSizeChanged(width, height, width, height);
         invalidate();
         setDrawingCacheEnabled(true);
@@ -98,13 +100,18 @@ public class DrawingView extends View {
 
     public void undoDrawing() {
         setDrawingCacheEnabled(false);
-        pathDeque.pop();
+        redoPathStack.add(pathStack.pop());
         invalidate();
         setDrawingCacheEnabled(true);
     }
 
+    public void redoDrawing() {
+        pathStack.add(redoPathStack.pop());
+        invalidate();
+    }
+
     public boolean canUndo() {
-        return !pathDeque.isEmpty();
+        return !pathStack.isEmpty();
     }
 
     private void touch_start(float x, float y) {
@@ -126,9 +133,9 @@ public class DrawingView extends View {
 
     private void touch_up() {
         mPath.lineTo(mX, mY);
-        pathDeque.add(mPath);
+        pathStack.add(mPath);
         // commit the path to our offscreen
-        mCanvas.drawPath(mPath,  paint);
+        //mCanvas.drawPath(mPath,  paint);
         mPath = new Path();
         if (onDrawLine != null)
             onDrawLine.hasLineOnScreen(canUndo());
