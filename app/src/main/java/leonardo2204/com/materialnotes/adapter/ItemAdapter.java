@@ -1,8 +1,6 @@
 package leonardo2204.com.materialnotes.adapter;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.hannesdorfmann.adapterdelegates2.ListDelegationAdapter;
 
@@ -18,37 +16,15 @@ import leonardo2204.com.materialnotes.model.Item;
 
 public class ItemAdapter extends ListDelegationAdapter<List<Item>> {
 
-    private OnItemClickListener onItemClickListener;
+    private final CheckboxDelegate.CheckboxClickListener checkboxClickListener;
+    private final ImageDelegate.ImageClickListener imageClickListener;
 
-    public ItemAdapter(Activity activity, List<Item> items) {
-        delegatesManager.addDelegate(new CheckboxDelegate(activity));
-        delegatesManager.addDelegate(new ImageDelegate(activity));
+    public ItemAdapter(Activity activity, List<Item> items, CheckboxDelegate.CheckboxClickListener checkboxClickListener, ImageDelegate.ImageClickListener imageClickListener) {
+        this.checkboxClickListener = checkboxClickListener;
+        this.imageClickListener = imageClickListener;
+        delegatesManager.addDelegate(new CheckboxDelegate(activity, this.checkboxClickListener));
+        delegatesManager.addDelegate(new ImageDelegate(activity, this.imageClickListener));
 
         setItems(items);
     }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(onItemClickListener != null)
-                    onItemClickListener.onClick();
-            }
-        });
-    }
-
-    public OnItemClickListener getOnItemClickListener() {
-        return onItemClickListener;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void onClick();
-    }
-
 }

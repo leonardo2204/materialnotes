@@ -26,9 +26,11 @@ import leonardo2204.com.materialnotes.model.Item;
 public class ImageDelegate extends AbsListItemAdapterDelegate<ImageItem, Item, ImageDelegate.ImageViewHolder> {
 
     private final LayoutInflater layoutInflater;
+    private final ImageClickListener onClickListener;
 
-    public ImageDelegate(Activity activity) {
+    public ImageDelegate(Activity activity, @NonNull ImageClickListener onClickListener) {
         this.layoutInflater = activity.getLayoutInflater() ;
+        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -43,8 +45,20 @@ public class ImageDelegate extends AbsListItemAdapterDelegate<ImageItem, Item, I
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ImageItem item, @NonNull ImageViewHolder viewHolder) {
+    protected void onBindViewHolder(@NonNull final ImageItem item, @NonNull ImageViewHolder viewHolder) {
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null)
+                    onClickListener.onClick(item);
+            }
+        });
+
         Glide.with(viewHolder.image.getContext()).load(item.getImageUrl()).into(viewHolder.image);
+    }
+
+    public interface ImageClickListener {
+        void onClick(ImageItem imageItem);
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {

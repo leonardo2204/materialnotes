@@ -21,12 +21,14 @@ import leonardo2204.com.materialnotes.controller.base.BaseController;
 
 public class ImageController extends BaseController {
 
+    private final File file;
+    private final String url;
     @BindView(R.id.image_result)
     ImageView imageView;
-    private final File file;
 
     public ImageController(Bundle bundle) {
         this.file = (File) bundle.getSerializable("image");
+        this.url = bundle.getString("url");
     }
 
     @Override
@@ -36,6 +38,9 @@ public class ImageController extends BaseController {
 
     @Override
     protected void onViewCreated(@NonNull View v) {
-        Glide.with(getActivity()).load(file).into(imageView);
+        if (file != null)
+            Glide.with(getActivity()).load(file).into(imageView);
+        else
+            Glide.with(getActivity()).load(url).into(imageView);
     }
 }

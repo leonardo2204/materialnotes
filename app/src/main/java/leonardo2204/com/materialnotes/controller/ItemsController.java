@@ -3,7 +3,6 @@ package leonardo2204.com.materialnotes.controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -22,7 +21,11 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import leonardo2204.com.materialnotes.MockClass;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.ItemAdapter;
+import leonardo2204.com.materialnotes.adapter.delegates.CheckboxDelegate;
+import leonardo2204.com.materialnotes.adapter.delegates.ImageDelegate;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
+import leonardo2204.com.materialnotes.model.CheckboxList;
+import leonardo2204.com.materialnotes.model.ImageItem;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 /**
@@ -39,13 +42,19 @@ public class ItemsController extends BaseController {
     FrameLayout overlayContainer;
 
     private ItemAdapter itemAdapter;
-    private ItemAdapter.OnItemClickListener onItemClickListener = new ItemAdapter.OnItemClickListener() {
+    private CheckboxDelegate.CheckboxClickListener checkboxClickListener = new CheckboxDelegate.CheckboxClickListener() {
         @Override
-        public void onClick() {
-            Snackbar.make(getView(),"clicked",Snackbar.LENGTH_SHORT).show();
+        public void onClick(CheckboxList checkboxItems) {
+            launchCheckboxController();
         }
     };
 
+    private ImageDelegate.ImageClickListener imageClickListener = new ImageDelegate.ImageClickListener() {
+        @Override
+        public void onClick(ImageItem imageItem) {
+            launchImageController(imageItem.getImageUrl());
+        }
+    };
 
     @Override
     protected View inflateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
@@ -68,8 +77,7 @@ public class ItemsController extends BaseController {
     }
 
     private void setupAdapter() {
-        itemAdapter = new ItemAdapter(getActivity(), MockClass.mockList());
-        itemAdapter.setOnItemClickListener(onItemClickListener);
+        itemAdapter = new ItemAdapter(getActivity(), MockClass.mockList(), checkboxClickListener, imageClickListener);
     }
 
     private void setupFabNavigation() {
@@ -92,15 +100,19 @@ public class ItemsController extends BaseController {
                                 .popChangeHandler(new FadeChangeHandler()));
                         return true;
                     case R.id.fab_checkbox:
-                        getRouter().pushController(RouterTransaction.with(new CheckboxController())
-                                .pushChangeHandler(new FadeChangeHandler(false))
-                                .popChangeHandler(new FadeChangeHandler()));
+                        launchCheckboxController();
                         return true;
                     default:
                         return false;
                 }
             }
         });
+    }
+
+    private void launchCheckboxController() {
+        getRouter().pushController(RouterTransaction.with(new CheckboxController())
+                .pushChangeHandler(new FadeChangeHandler(false))
+                .popChangeHandler(new FadeChangeHandler()));
     }
 
     @Override
@@ -113,11 +125,7 @@ public class ItemsController extends BaseController {
 
             @Override
             public void onImagePicked(File file, EasyImage.ImageSource imageSource, int i) {
-                Bundle bundle = new Bundle(1);
-                bundle.putSerializable("image", file);
-                getParentController().getRouter().pushController(RouterTransaction.with(new ImageController(bundle))
-                        .pushChangeHandler(new FadeChangeHandler())
-                        .popChangeHandler(new FadeChangeHandler()));
+                launchImageController(file);
             }
 
             @Override
@@ -126,4 +134,21 @@ public class ItemsController extends BaseController {
             }
         });
     }
+
+    private void launchImageController(File file) {
+        Bundle bundle = new Bundle(1);
+        bundle.putSerializable("image", file);
+        getParentController().getRouter().pushController(RouterTransaction.with(new ImageController(bundle))
+                .pushChangeHandler(new FadeChangeHandler())
+                .popChangeHandler(new FadeChangeHandler()));
+    }
+
+    private void launchImageController(String url) {
+        Bundle bundle = new Bundle(1);
+        bundle.putSerializable("url", url);
+        getParentController().getRouter().pushController(RouterTransaction.with(new ImageController(bundle))
+                .pushChangeHandler(new FadeChangeHandler())
+                .popChangeHandler(new FadeChangeHandler()));
+    }
+
 }

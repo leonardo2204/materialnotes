@@ -28,9 +28,11 @@ import leonardo2204.com.materialnotes.model.Item;
 public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, Item, CheckboxDelegate.CheckboxViewHolder> {
 
     private final LayoutInflater layoutInflater;
+    private final CheckboxClickListener onClickListener;
 
-    public CheckboxDelegate(Activity activity) {
+    public CheckboxDelegate(Activity activity, @NonNull CheckboxClickListener onClickListener) {
         this.layoutInflater = activity.getLayoutInflater();
+        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -45,7 +47,15 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull CheckboxList item, @NonNull CheckboxViewHolder viewHolder) {
+    protected void onBindViewHolder(@NonNull final CheckboxList item, @NonNull CheckboxViewHolder viewHolder) {
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null)
+                    onClickListener.onClick(item);
+            }
+        });
+
         for(CheckboxItem checkboxItem : item) {
             CheckBox checkBox = createCheckbox(checkboxItem, viewHolder.container.getContext());
             viewHolder.container.addView(checkBox);
@@ -62,6 +72,10 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
         checkBox.setPadding(16,16,16,16);
 
         return checkBox;
+    }
+
+    public interface CheckboxClickListener {
+        void onClick(CheckboxList checkboxItems);
     }
 
     static class CheckboxViewHolder extends RecyclerView.ViewHolder {

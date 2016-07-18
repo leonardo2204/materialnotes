@@ -115,7 +115,7 @@ public class DrawingController extends BaseController {
 
     private void setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(drawingBottomSheet);
-        bottomSheetBehavior.setPeekHeight(brush.getIntrinsicHeight());
+        bottomSheetBehavior.setPeekHeight(brush.getIntrinsicHeight() + 6);
     }
 
     private void confirmClearDialog() {
