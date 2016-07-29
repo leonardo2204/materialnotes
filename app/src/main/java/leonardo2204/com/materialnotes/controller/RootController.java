@@ -18,17 +18,22 @@ import com.bluelinelabs.conductor.ControllerChangeHandler;
 import com.bluelinelabs.conductor.ControllerChangeType;
 import com.bluelinelabs.conductor.Router;
 import com.bluelinelabs.conductor.RouterTransaction;
+import com.jakewharton.rxbinding.support.design.widget.RxNavigationView;
 
 import javax.inject.Inject;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
+import io.realm.Realm;
 import leonardo2204.com.materialnotes.ActionBarOwner;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
+import leonardo2204.com.materialnotes.di.ExposedModule;
 import leonardo2204.com.materialnotes.di.component.DaggerRootComponent;
 import leonardo2204.com.materialnotes.di.component.RootComponent;
 import leonardo2204.com.materialnotes.di.module.RootModule;
+import rx.Subscription;
+import rx.functions.Action1;
 
 /**
  * Created by leonardo on 6/29/16.
@@ -48,9 +53,12 @@ public class RootController extends BaseController implements ActionBarOwner.Act
     FrameLayout childContainer;
     @BindDrawable(R.drawable.ic_menu)
     Drawable menuDrawable;
+    @Inject
+    Realm realm;
     private int menuItemId;
     private Router childRouter;
     private RootComponent rootComponent;
+    private Subscription navigationMenuSubscription;
 
     public RootController() {
         setHasOptionsMenu(true);
@@ -68,8 +76,12 @@ public class RootController extends BaseController implements ActionBarOwner.Act
 
     @Override
     protected void onCreate() {
-        rootComponent = DaggerRootComponent.builder().rootModule(new RootModule()).build();
+        rootComponent = DaggerRootComponent.builder()
+                .rootModule(new RootModule(getActivity()))
+                .exposedModule(new ExposedModule(getApplicationContext()))
+                .build();
         rootComponent.inject(this);
+        //MockClass.mockList(realm);
     }
 
     public RootComponent getRootComponent() {
@@ -80,7 +92,6 @@ public class RootController extends BaseController implements ActionBarOwner.Act
     protected void onChangeEnded(@NonNull ControllerChangeHandler changeHandler, @NonNull ControllerChangeType changeType) {
         if(childContainer != null && getChildRouter(childContainer,null) != null && !getChildRouter(childContainer,null).hasRootController())
             getChildRouter(childContainer,null).setRoot(RouterTransaction.with(new ItemsController()));
-        //getChildRouter(childContainer,null).pushController(RouterTransaction.with(new ItemsController()));
     }
 
     @Override
@@ -100,18 +111,22 @@ public class RootController extends BaseController implements ActionBarOwner.Act
         super.onDestroy();
     }
 
+    @Override
+    protected void onDestroyView(View view) {
+        super.onDestroyView(view);
+        navigationMenuSubscription.unsubscribe();
+    }
+
     private void setupUI() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         actionBarOwner.setActionBarCallbacks(this);
         actionBarOwner.setConfig(new ActionBarOwner.Config(true, true, menuDrawable, "Items"));
         childRouter = getChildRouter(childContainer, null);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        navigationMenuSubscription = RxNavigationView.itemSelections(navigationView).subscribe(new Action1<MenuItem>() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-
-                if (menuItemId == item.getItemId()) {
+            public void call(MenuItem menuItem) {
+                if (menuItemId == menuItem.getItemId()) {
                     drawerLayout.closeDrawer(navigationView);
-                    return false;
                 }
 
                 final Controller destination;
@@ -141,12 +156,10 @@ public class RootController extends BaseController implements ActionBarOwner.Act
 //                    childRouter.popToTag(tag);
 
                 drawerLayout.closeDrawer(navigationView);
-                item.setChecked(true);
-                menuItemId = item.getItemId();
-                return true;
+                menuItem.setChecked(true);
+                menuItemId = menuItem.getItemId();
             }
         });
-
     }
 
     @Override

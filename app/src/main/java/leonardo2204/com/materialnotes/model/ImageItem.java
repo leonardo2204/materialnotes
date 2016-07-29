@@ -1,10 +1,12 @@
 package leonardo2204.com.materialnotes.model;
 
+import io.realm.RealmObject;
+
 /**
  * Created by leonardo on 6/30/16.
  */
 
-public class ImageItem implements Item {
+public class ImageItem extends RealmObject implements Item {
     private String imageUrl;
 
     public ImageItem() {

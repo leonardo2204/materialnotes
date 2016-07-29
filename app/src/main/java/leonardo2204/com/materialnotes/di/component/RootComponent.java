@@ -1,28 +1,18 @@
 package leonardo2204.com.materialnotes.di.component;
 
 import dagger.Component;
-import leonardo2204.com.materialnotes.ActionBarOwner;
-import leonardo2204.com.materialnotes.UIThread;
 import leonardo2204.com.materialnotes.controller.RootController;
 import leonardo2204.com.materialnotes.di.DaggerScope;
+import leonardo2204.com.materialnotes.di.ExposedComponent;
+import leonardo2204.com.materialnotes.di.ExposedModule;
 import leonardo2204.com.materialnotes.di.module.RootModule;
-import leonardo2204.com.materialnotes.domain.executor.PostExecutionThread;
-import leonardo2204.com.materialnotes.domain.executor.ThreadExecutor;
 
 /**
  * Created by leonardo on 7/14/16.
  */
 
-@Component(modules = RootModule.class)
+@Component(modules = {RootModule.class, ExposedModule.class})
 @DaggerScope(RootComponent.class)
-public interface RootComponent {
-    ActionBarOwner actionBarOwner();
-
-    PostExecutionThread postExecutionThread();
-
-    UIThread uiThread();
-
-    ThreadExecutor threadExecutor();
-
+public interface RootComponent extends ExposedComponent {
     void inject(RootController rootController);
 }
