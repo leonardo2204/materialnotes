@@ -43,6 +43,7 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * Created by leonardo on 6/30/16.
@@ -221,7 +222,8 @@ public class ItemsController extends BaseController {
         @Override
         public void onError(Throwable e) {
             swipeRefreshLayout.setRefreshing(false);
-            e.printStackTrace();
+            Timber.tag("itemsController");
+            Timber.e(e, e.getMessage());
         }
 
         @Override

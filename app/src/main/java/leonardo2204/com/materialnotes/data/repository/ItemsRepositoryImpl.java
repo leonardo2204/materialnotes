@@ -1,21 +1,15 @@
 package leonardo2204.com.materialnotes.data.repository;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import leonardo2204.com.materialnotes.domain.repository.ItemsRepository;
 import leonardo2204.com.materialnotes.model.Checkboxes;
 import leonardo2204.com.materialnotes.model.ImageItem;
 import leonardo2204.com.materialnotes.model.Item;
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by leonardo on 7/29/16.
@@ -23,44 +17,27 @@ import rx.functions.Func1;
 
 public class ItemsRepositoryImpl implements ItemsRepository {
 
-    private final Context context;
-
-    public ItemsRepositoryImpl(Context context) {
-        this.context = context;
-    }
-
     @Override
     public Observable<List<Item>> fetchAllItems() {
+
+        Realm realm = null;
         final List<Item> items = new ArrayList<>();
-        final Realm realm = Realm.getInstance(new RealmConfiguration.Builder(context).build());
 
-        final RealmQuery<Checkboxes> queryCheck = realm.where(Checkboxes.class);
-        final RealmQuery<ImageItem> queryImage = realm.where(ImageItem.class);
+        try {
+            realm = Realm.getDefaultInstance();
 
-        return queryCheck.findAll()
-                .asObservable()
-                .flatMap(new Func1<RealmResults<Checkboxes>, Observable<RealmResults<ImageItem>>>() {
-                    @Override
-                    public Observable<RealmResults<ImageItem>> call(RealmResults<Checkboxes> checkboxes) {
-                        for (Checkboxes checks : checkboxes)
-                            items.add(checks);
+            final RealmResults<Checkboxes> checkboxes = realm.where(Checkboxes.class).findAll();
+            final RealmResults<ImageItem> imageItems = realm.where(ImageItem.class).findAll();
 
-                        return queryImage.findAll().asObservable();
-                    }
-                })
-                .flatMap(new Func1<RealmResults<ImageItem>, Observable<List<Item>>>() {
-                    @Override
-                    public Observable<List<Item>> call(RealmResults<ImageItem> imageItems) {
-                        for (ImageItem images : imageItems)
-                            items.add(images);
+            for (Checkboxes checks : checkboxes)
+                items.add(realm.copyFromRealm(checks));
+            for (ImageItem images : imageItems)
+                items.add(realm.copyFromRealm(images));
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
 
-                        return Observable.create(new Observable.OnSubscribe<List<Item>>() {
-                            @Override
-                            public void call(Subscriber<? super List<Item>> subscriber) {
-                                subscriber.onNext(items);
-                            }
-                        });
-                    }
-                });
+        return Observable.just(items);
     }
 }

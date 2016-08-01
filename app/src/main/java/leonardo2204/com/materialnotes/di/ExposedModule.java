@@ -1,7 +1,5 @@
 package leonardo2204.com.materialnotes.di;
 
-import android.content.Context;
-
 import dagger.Module;
 import dagger.Provides;
 import leonardo2204.com.materialnotes.ActionBarOwner;
@@ -18,12 +16,6 @@ import leonardo2204.com.materialnotes.domain.repository.ItemsRepository;
  */
 @Module
 public class ExposedModule {
-
-    private final Context context;
-
-    public ExposedModule(Context context) {
-        this.context = context;
-    }
 
     @Provides
     @DaggerScope(RootComponent.class)
@@ -52,7 +44,7 @@ public class ExposedModule {
     @Provides
     @DaggerScope(RootComponent.class)
     public ItemsRepository providesItemsRepository() {
-        return new ItemsRepositoryImpl(context);
+        return new ItemsRepositoryImpl();
     }
 
 }

@@ -15,9 +15,10 @@ public class MockClass {
         throw new AssertionError();
     }
 
-    public static void mockList(Realm myRealm) {
+    public static void mockList() {
 
-        myRealm.executeTransaction(new Realm.Transaction() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Checkboxes list = realm.createObject(Checkboxes.class);
@@ -63,7 +64,7 @@ public class MockClass {
             }
         });
 
-        //myRealm.close();
+        realm.close();
     }
 
 }

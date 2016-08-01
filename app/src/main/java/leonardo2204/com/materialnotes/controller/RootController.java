@@ -78,10 +78,10 @@ public class RootController extends BaseController implements ActionBarOwner.Act
     protected void onCreate() {
         rootComponent = DaggerRootComponent.builder()
                 .rootModule(new RootModule(getActivity()))
-                .exposedModule(new ExposedModule(getApplicationContext()))
+                .exposedModule(new ExposedModule())
                 .build();
         rootComponent.inject(this);
-        //MockClass.mockList(realm);
+        //MockClass.mockList();
     }
 
     public RootComponent getRootComponent() {

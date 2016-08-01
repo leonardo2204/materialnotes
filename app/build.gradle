@@ -61,6 +61,10 @@ dependencies {
 
     debugCompile rootProject.ext.leakCanary
 
+    compile rootProject.ext.timber
+
+    compile 'com.uphyca:stetho_realm:0.9.0'
+
     apt rootProject.ext.butterknifeCompiler
     apt rootProject.ext.daggerCompiler
     provided rootProject.ext.javaxAnnotation

@@ -33,7 +33,7 @@ ext {
     rxBindingDesign = 'com.jakewharton.rxbinding:rxbinding-design:0.4.0'
     rxBindingRecyclerView = 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.4.0'
 
-    greenDao = 'org.greenrobot:greendao:3.0.1'
+    timber = 'com.jakewharton.timber:timber:4.1.2'
 
     mosby = 'com.hannesdorfmann.mosby:mvp:2.0.1'
     mosbyViewState = 'com.hannesdorfmann.mosby:viewstate:2.0.1'
