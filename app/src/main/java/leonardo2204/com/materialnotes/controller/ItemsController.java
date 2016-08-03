@@ -20,12 +20,16 @@ import com.jakewharton.rxbinding.support.v7.widget.RecyclerViewScrollEvent;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import leonardo2204.com.materialnotes.ActionBarOwner;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.ItemAdapter;
@@ -35,14 +39,15 @@ import leonardo2204.com.materialnotes.controller.base.BaseController;
 import leonardo2204.com.materialnotes.di.component.DaggerItemComponent;
 import leonardo2204.com.materialnotes.di.component.ItemComponent;
 import leonardo2204.com.materialnotes.di.module.ItemModule;
-import leonardo2204.com.materialnotes.domain.interactor.GetItemsUseCase;
 import leonardo2204.com.materialnotes.model.Checkboxes;
 import leonardo2204.com.materialnotes.model.ImageItem;
 import leonardo2204.com.materialnotes.model.Item;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -54,7 +59,7 @@ public class ItemsController extends BaseController {
     @Inject
     protected ActionBarOwner actionBarOwner;
     @Inject
-    protected GetItemsUseCase getItemsUseCase;
+    protected Realm realm;
     @BindView(R.id.rv_items)
     RecyclerView rvItems;
     @BindView(R.id.main_fab)
@@ -91,7 +96,6 @@ public class ItemsController extends BaseController {
                 .itemModule(new ItemModule())
                 .build();
         itemComponent.inject(this);
-        getItemsUseCase.execute(new GetItemsSubscriber());
     }
 
     @Override
@@ -116,6 +120,7 @@ public class ItemsController extends BaseController {
         //swipeRefreshLayout.setRefreshing(true);
         sglm = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         setupAdapter();
+        fetchItems();
         setupFabNavigation();
         sglm.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         //rvItems.addItemDecoration(new SpanItemDecorator(12, 12));
@@ -125,7 +130,7 @@ public class ItemsController extends BaseController {
         swipeRefreshSubscription = RxSwipeRefreshLayout.refreshes(swipeRefreshLayout).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                getItemsUseCase.execute(new GetItemsSubscriber());
+                fetchItems();
             }
         });
 
@@ -139,6 +144,35 @@ public class ItemsController extends BaseController {
 
     private void setupAdapter() {
         itemAdapter = new ItemAdapter(getActivity(), null, checkboxClickListener, imageClickListener);
+    }
+
+    private void fetchItems() {
+        final RealmQuery<Checkboxes> queryCheck = realm.where(Checkboxes.class);
+        final RealmQuery<ImageItem> queryImage = realm.where(ImageItem.class);
+
+        final List<Item> items = new ArrayList<>();
+
+        queryCheck.findAllAsync()
+                .asObservable()
+                .flatMap(new Func1<RealmResults<Checkboxes>, Observable<RealmResults<ImageItem>>>() {
+                    @Override
+                    public Observable<RealmResults<ImageItem>> call(RealmResults<Checkboxes> checkboxes) {
+                        for (Checkboxes checks : checkboxes)
+                            items.add(realm.copyFromRealm(checks));
+
+                        return queryImage.findAll().asObservable();
+                    }
+                })
+                .flatMap(new Func1<RealmResults<ImageItem>, Observable<List<Item>>>() {
+                    @Override
+                    public Observable<List<Item>> call(RealmResults<ImageItem> imageItems) {
+                        for (ImageItem images : imageItems)
+                            items.add(realm.copyFromRealm(images));
+
+                        return Observable.just(items);
+                    }
+                })
+                .subscribe(new GetItemsSubscriber());
     }
 
     private void setupFabNavigation() {

@@ -21,4 +21,5 @@ public interface ExposedComponent {
     ThreadExecutor threadExecutor();
 
     ItemsRepository itemsRepository();
+
 }
