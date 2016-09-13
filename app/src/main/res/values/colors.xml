@@ -17,4 +17,13 @@
     <color name="md_grey_900">#212121</color>
     <color name="md_black_1000">#000000</color>
     <color name="md_white_1000">#ffffff</color>
+
+
+    <!-- postit colors -->
+    <color name="postit_canary_yellow">#FFFFA5</color>
+    <color name="postit_sky_blue">#B7FFFE</color>
+    <color name="postit_neon_pink">#FF2CB1</color>
+    <color name="postit_neon_orange">#FF8938</color>
+    <color name="postit_neon_yellow">#FFE93E</color>
+    <color name="postit_neon_lime">#ACE95D</color>
 </resources>

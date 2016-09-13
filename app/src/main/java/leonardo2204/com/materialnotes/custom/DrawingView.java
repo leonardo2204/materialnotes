@@ -1,4 +1,4 @@
-package leonardo2204.com.materialnotes.view;
+package leonardo2204.com.materialnotes.custom;
 
 import android.content.Context;
 import android.graphics.Bitmap;

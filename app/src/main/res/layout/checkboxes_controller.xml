@@ -1,39 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout_checkbox"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#88000000"
     android:clickable="true">
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:layout_margin="32dp"
-        android:background="@android:color/white">
+        android:background="@color/md_white_1000">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/checkboxes_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical" />
-
-            <leonardo2204.com.materialnotes.view.EndDrawableEditText
+            <leonardo2204.com.materialnotes.custom.EndDrawableEditText
                 android:id="@+id/new_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@id/checkboxes_container"
                 android:drawableEnd="@drawable/ic_action_add"
                 android:drawableRight="@drawable/ic_action_add"
                 android:hint="Add new item" />
 
-        </RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_checks"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-    </android.support.v4.widget.NestedScrollView>
-</FrameLayout>
+        </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/check_add_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:background="@color/colorAccent"
+            android:src="@drawable/ic_done"
+            android:tint="@color/md_white_1000"
+            app:fabSize="mini" />
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

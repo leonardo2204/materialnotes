@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <leonardo2204.com.materialnotes.view.DrawingView
+        <leonardo2204.com.materialnotes.custom.DrawingView
             android:id="@+id/drawing_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

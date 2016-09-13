@@ -1,11 +1,15 @@
 package leonardo2204.com.materialnotes.model;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Required;
+
 /**
  * Created by leonardo on 6/30/16.
  */
 
-public class CheckboxItem implements Item {
+public class CheckboxItem extends RealmObject implements Item {
     private boolean isChecked;
+    @Required
     private String text;
 
     public CheckboxItem() {

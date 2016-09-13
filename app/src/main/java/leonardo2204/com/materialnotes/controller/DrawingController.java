@@ -24,7 +24,7 @@ import butterknife.OnClick;
 import leonardo2204.com.materialnotes.DetachableClickListener;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
-import leonardo2204.com.materialnotes.view.DrawingView;
+import leonardo2204.com.materialnotes.custom.DrawingView;
 
 /**
  * Created by leonardo on 6/30/16.

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?listPreferredItemHeight"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/checkbox_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/handle"
+        android:layout_toStartOf="@+id/handle"
+        android:paddingLeft="16dp" />
+
+    <ImageView
+        android:id="@+id/handle"
+        android:layout_width="?listPreferredItemHeight"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_action_reorder" />
+
+</RelativeLayout>

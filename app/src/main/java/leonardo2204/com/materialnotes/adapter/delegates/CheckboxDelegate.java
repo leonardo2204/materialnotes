@@ -18,14 +18,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.model.CheckboxItem;
-import leonardo2204.com.materialnotes.model.CheckboxList;
+import leonardo2204.com.materialnotes.model.Checkboxes;
 import leonardo2204.com.materialnotes.model.Item;
 
 /**
  * Created by leonardo on 6/30/16.
  */
 
-public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, Item, CheckboxDelegate.CheckboxViewHolder> {
+public class CheckboxDelegate extends AbsListItemAdapterDelegate<Checkboxes, Item, CheckboxDelegate.CheckboxViewHolder> {
 
     private final LayoutInflater layoutInflater;
     private final CheckboxClickListener onClickListener;
@@ -37,7 +37,7 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
 
     @Override
     protected boolean isForViewType(@NonNull Item item, List<Item> items, int position) {
-        return item instanceof CheckboxList;
+        return item instanceof Checkboxes;
     }
 
     @NonNull
@@ -47,7 +47,7 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final CheckboxList item, @NonNull CheckboxViewHolder viewHolder) {
+    protected void onBindViewHolder(@NonNull final Checkboxes item, @NonNull CheckboxViewHolder viewHolder) {
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +56,7 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
             }
         });
 
-        for(CheckboxItem checkboxItem : item) {
+        for (CheckboxItem checkboxItem : item.getItems()) {
             CheckBox checkBox = createCheckbox(checkboxItem, viewHolder.container.getContext());
             viewHolder.container.addView(checkBox);
         }
@@ -75,7 +75,7 @@ public class CheckboxDelegate extends AbsListItemAdapterDelegate<CheckboxList, I
     }
 
     public interface CheckboxClickListener {
-        void onClick(CheckboxList checkboxItems);
+        void onClick(Checkboxes checkboxItems);
     }
 
     static class CheckboxViewHolder extends RecyclerView.ViewHolder {

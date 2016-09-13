@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:aw="http://schemas.android.com/apk/res-auto"
+    android:background="#88000000"
+    android:clickable="true">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="32dp"
+        android:background="@color/md_white_1000">
+
+        <org.firezenk.audiowaves.Visualizer
+            android:id="@+id/audio_visualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            aw:aw_format="vertical_lines"
+            aw:aw_gravity="center"
+            aw:aw_width="100"
+            aw:aw_height="200"
+            aw:aw_num_waves="10"
+            aw:aw_line_with="30"
+            aw:aw_line_min_with="30"
+            aw:aw_line_height="30"
+            aw:aw_line_min_height="30"
+            aw:aw_line_spacing="10"
+            aw:aw_line_border_radius="50"
+            aw:aw_ball_diameter="30"
+            aw:aw_color_uniform="@android:color/holo_red_dark"
+            aw:aw_color_is_gradient="true"
+            aw:aw_color_gradient_start="@android:color/holo_blue_bright"
+            aw:aw_color_gradient_end="@android:color/holo_red_dark" />
+
+    </FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

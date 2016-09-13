@@ -1,23 +1,33 @@
-package leonardo2204.com.materialnotes.di.module;
+package leonardo2204.com.materialnotes;
 
-import dagger.Module;
+import android.app.Application;
+
+import com.facebook.stetho.Stetho;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import leonardo2204.com.materialnotes.model.CheckboxItem;
+import leonardo2204.com.materialnotes.model.Checkboxes;
+import leonardo2204.com.materialnotes.model.ImageItem;
+import timber.log.Timber;
 
 /**
- * Created by leonardo on 7/14/16.
+ * Created by leonardo on 7/28/16.
  */
-@Module
-public class RootModule {
 
-    //private final Context context;
+public class MaterialApplication extends Application {
 
-//    public RootModule(Context context) {
-//        this.context = context;
-//    }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Stetho.initializeWithDefaults(this);
+        if (BuildConfig.DEBUG)
+            Timber.plant(new Timber.DebugTree());
+        initializeRealm();
+    }
 
-   /* @Provides
-    @DaggerScope(RootComponent.class)
-    public Realm providesRealm() {
-        RealmConfiguration config = new RealmConfiguration.Builder(context)
+    private void initializeRealm() {
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .deleteRealmIfMigrationNeeded()
                 .initialData(new Realm.Transaction() {
                     @Override
@@ -65,7 +75,7 @@ public class RootModule {
                     }
                 })
                 .build();
-        return Realm.getInstance(config);
-    }*/
+        Realm.setDefaultConfiguration(config);
+    }
 
 }
