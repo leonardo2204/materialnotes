@@ -20,7 +20,6 @@ import leonardo2204.com.materialnotes.domain.executor.ThreadExecutor;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -57,8 +56,8 @@ public abstract class UseCase {
     @SuppressWarnings("unchecked")
     public void execute(Subscriber UseCaseSubscriber) {
         this.subscription = this.buildUseCaseObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.from(threadExecutor))
+                .observeOn(postExecutionThread.getScheduler())
                 .subscribe(UseCaseSubscriber);
     }
 

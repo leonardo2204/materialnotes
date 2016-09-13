@@ -1,4 +1,4 @@
-package leonardo2204.com.materialnotes.view;
+package leonardo2204.com.materialnotes.custom;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;

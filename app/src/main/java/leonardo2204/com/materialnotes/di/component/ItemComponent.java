@@ -1,7 +1,6 @@
 package leonardo2204.com.materialnotes.di.component;
 
 import dagger.Component;
-import io.realm.Realm;
 import leonardo2204.com.materialnotes.controller.ItemsController;
 import leonardo2204.com.materialnotes.di.DaggerScope;
 import leonardo2204.com.materialnotes.di.ExposedComponent;
@@ -15,6 +14,4 @@ import leonardo2204.com.materialnotes.di.module.ItemModule;
 @DaggerScope(ItemComponent.class)
 public interface ItemComponent extends ExposedComponent {
     void inject(ItemsController itemsController);
-
-    Realm realm();
 }

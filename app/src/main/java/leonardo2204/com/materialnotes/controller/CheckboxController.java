@@ -3,6 +3,7 @@ package leonardo2204.com.materialnotes.controller;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,19 +17,16 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.Realm;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.CheckboxItemsAdapter;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
+import leonardo2204.com.materialnotes.custom.EndDrawableEditText;
 import leonardo2204.com.materialnotes.di.component.CheckboxComponent;
 import leonardo2204.com.materialnotes.di.component.DaggerCheckboxComponent;
 import leonardo2204.com.materialnotes.model.CheckboxItem;
 import leonardo2204.com.materialnotes.model.Checkboxes;
-import leonardo2204.com.materialnotes.view.EndDrawableEditText;
 
 /**
  * Created by leonardo on 7/1/16.
@@ -36,12 +34,12 @@ import leonardo2204.com.materialnotes.view.EndDrawableEditText;
 
 public class CheckboxController extends BaseController implements EndDrawableEditText.OnDrawableClickListener, CheckboxItemsAdapter.OnStartDragListener {
 
-    @Inject
-    protected Realm realm;
     @BindView(R.id.new_item)
     EndDrawableEditText newItemEditText;
     @BindView(R.id.rv_checks)
     RecyclerView rv_checks;
+    @BindView(R.id.root_layout_checkbox)
+    CoordinatorLayout coordinatorLayout;
     private CheckboxItemsAdapter adapter;
     private ItemTouchHelper itemTouchHelper;
     private Checkboxes checkboxNote = new Checkboxes();
@@ -77,7 +75,7 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
             createCheckbox(item);
             newItemEditText.getText().clear();
         } else {
-            Snackbar.make(getView(), "Check nao pode ser nulo", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, "Check nao pode ser nulo", Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -115,16 +113,16 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
     }
 
     private void saveNote() {
-        try {
-            realm.beginTransaction();
-            Checkboxes cbs = realm.createObject(Checkboxes.class);
-            cbs.getItems().addAll(items);
-            realm.commitTransaction();
-            getRouter().popCurrentController();
-        } catch (Exception e) {
-            realm.cancelTransaction();
-            Snackbar.make(getView(), "Erro ao criar checkbox", Snackbar.LENGTH_LONG).show();
-        }
+//        try {
+//            realm.beginTransaction();
+//            Checkboxes cbs = realm.createObject(Checkboxes.class);
+//            cbs.getItems().addAll(items);
+//            realm.commitTransaction();
+//            getRouter().popCurrentController();
+//        } catch (Exception e) {
+//            realm.cancelTransaction();
+//            Snackbar.make(getView(), "Erro ao criar checkbox", Snackbar.LENGTH_LONG).show();
+//        }
     }
 
     @Override

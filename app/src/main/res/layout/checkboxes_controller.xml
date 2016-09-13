@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout_checkbox"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#88000000"
@@ -19,7 +20,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <leonardo2204.com.materialnotes.view.EndDrawableEditText
+            <leonardo2204.com.materialnotes.custom.EndDrawableEditText
                 android:id="@+id/new_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

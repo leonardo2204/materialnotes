@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
-import io.realm.Realm;
 import leonardo2204.com.materialnotes.ActionBarOwner;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
@@ -53,8 +52,6 @@ public class RootController extends BaseController implements ActionBarOwner.Act
     FrameLayout childContainer;
     @BindDrawable(R.drawable.ic_menu)
     Drawable menuDrawable;
-    @Inject
-    Realm realm;
     private int menuItemId;
     private Router childRouter;
     private RootComponent rootComponent;
@@ -77,7 +74,7 @@ public class RootController extends BaseController implements ActionBarOwner.Act
     @Override
     protected void onCreate() {
         rootComponent = DaggerRootComponent.builder()
-                .rootModule(new RootModule(getActivity()))
+                .rootModule(new RootModule())
                 .exposedModule(new ExposedModule())
                 .build();
         rootComponent.inject(this);

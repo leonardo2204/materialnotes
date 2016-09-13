@@ -12,54 +12,52 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.bluelinelabs.conductor.RouterTransaction;
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler;
+import com.hannesdorfmann.mosby.mvp.viewstate.lce.LceViewState;
+import com.hannesdorfmann.mosby.mvp.viewstate.lce.data.RetainingLceViewState;
 import com.jakewharton.rxbinding.support.v4.widget.RxSwipeRefreshLayout;
 import com.jakewharton.rxbinding.support.v7.widget.RecyclerViewScrollEvent;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import leonardo2204.com.materialnotes.ActionBarOwner;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.ItemAdapter;
 import leonardo2204.com.materialnotes.adapter.delegates.CheckboxDelegate;
 import leonardo2204.com.materialnotes.adapter.delegates.ImageDelegate;
-import leonardo2204.com.materialnotes.controller.base.BaseController;
+import leonardo2204.com.materialnotes.controller.base.BaseMvpController;
 import leonardo2204.com.materialnotes.di.component.DaggerItemComponent;
 import leonardo2204.com.materialnotes.di.component.ItemComponent;
 import leonardo2204.com.materialnotes.di.module.ItemModule;
 import leonardo2204.com.materialnotes.model.Checkboxes;
 import leonardo2204.com.materialnotes.model.ImageItem;
 import leonardo2204.com.materialnotes.model.Item;
+import leonardo2204.com.materialnotes.presenter.ItemsPresenter;
+import leonardo2204.com.materialnotes.view.ItemView;
 import pl.aprilapps.easyphotopicker.EasyImage;
-import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
-import rx.functions.Func1;
-import timber.log.Timber;
 
 /**
  * Created by leonardo on 6/30/16.
  */
 
-public class ItemsController extends BaseController {
+public class ItemsController extends BaseMvpController<RecyclerView, List<Item>, ItemView, ItemsPresenter> implements ItemView {
 
     @Inject
     protected ActionBarOwner actionBarOwner;
     @Inject
-    protected Realm realm;
+    protected ItemsPresenter itemsPresenter;
+
     @BindView(R.id.rv_items)
     RecyclerView rvItems;
     @BindView(R.id.main_fab)
@@ -68,6 +66,9 @@ public class ItemsController extends BaseController {
     FrameLayout overlayContainer;
     @BindView(R.id.refreshItemsLayout)
     SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.errorView)
+    protected TextView errorTextView;
+
     private StaggeredGridLayoutManager sglm;
     private ItemComponent itemComponent;
     private Subscription scrollEventObservable;
@@ -120,7 +121,6 @@ public class ItemsController extends BaseController {
         //swipeRefreshLayout.setRefreshing(true);
         sglm = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         setupAdapter();
-        fetchItems();
         setupFabNavigation();
         sglm.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         //rvItems.addItemDecoration(new SpanItemDecorator(12, 12));
@@ -130,7 +130,7 @@ public class ItemsController extends BaseController {
         swipeRefreshSubscription = RxSwipeRefreshLayout.refreshes(swipeRefreshLayout).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                fetchItems();
+                loadData(true);
             }
         });
 
@@ -144,35 +144,6 @@ public class ItemsController extends BaseController {
 
     private void setupAdapter() {
         itemAdapter = new ItemAdapter(getActivity(), null, checkboxClickListener, imageClickListener);
-    }
-
-    private void fetchItems() {
-        final RealmQuery<Checkboxes> queryCheck = realm.where(Checkboxes.class);
-        final RealmQuery<ImageItem> queryImage = realm.where(ImageItem.class);
-
-        final List<Item> items = new ArrayList<>();
-
-        queryCheck.findAllAsync()
-                .asObservable()
-                .flatMap(new Func1<RealmResults<Checkboxes>, Observable<RealmResults<ImageItem>>>() {
-                    @Override
-                    public Observable<RealmResults<ImageItem>> call(RealmResults<Checkboxes> checkboxes) {
-                        for (Checkboxes checks : checkboxes)
-                            items.add(realm.copyFromRealm(checks));
-
-                        return queryImage.findAll().asObservable();
-                    }
-                })
-                .flatMap(new Func1<RealmResults<ImageItem>, Observable<List<Item>>>() {
-                    @Override
-                    public Observable<List<Item>> call(RealmResults<ImageItem> imageItems) {
-                        for (ImageItem images : imageItems)
-                            items.add(realm.copyFromRealm(images));
-
-                        return Observable.just(items);
-                    }
-                })
-                .subscribe(new GetItemsSubscriber());
     }
 
     private void setupFabNavigation() {
@@ -196,6 +167,11 @@ public class ItemsController extends BaseController {
                         return true;
                     case R.id.fab_checkbox:
                         launchCheckboxController();
+                        return true;
+                    case R.id.fab_mic:
+                        getRouter().pushController(RouterTransaction.with(new AudioController())
+                                .pushChangeHandler(new FadeChangeHandler(false))
+                                .popChangeHandler(new FadeChangeHandler()));
                         return true;
                     default:
                         return false;
@@ -246,25 +222,50 @@ public class ItemsController extends BaseController {
                 .popChangeHandler(new FadeChangeHandler()));
     }
 
-    private class GetItemsSubscriber extends Subscriber<List<Item>> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            swipeRefreshLayout.setRefreshing(false);
-            Timber.tag("itemsController");
-            Timber.e(e, e.getMessage());
-        }
-
-        @Override
-        public void onNext(List<Item> items) {
-            itemAdapter.setItems(items);
-            swipeRefreshLayout.setRefreshing(false);
-        }
+    @Override
+    public List<Item> getData() {
+        return itemAdapter.getItems();
     }
 
+    @NonNull
+    @Override
+    public LceViewState<List<Item>, ItemView> createViewState() {
+        return new RetainingLceViewState<>();
+    }
+
+    @Override
+    protected String getErrorMessage(Throwable e, boolean pullToRefresh) {
+        swipeRefreshLayout.setRefreshing(false);
+        return e.getMessage();
+    }
+
+    @NonNull
+    @Override
+    public ItemsPresenter createPresenter() {
+        return itemsPresenter;
+    }
+
+    @Override
+    public void setData(List<Item> data) {
+        itemAdapter.setItems(data);
+        itemAdapter.notifyDataSetChanged();
+        swipeRefreshLayout.setRefreshing(false);
+        showContent();
+    }
+
+    @Override
+    public void loadData(boolean pullToRefresh) {
+        itemsPresenter.fetchItems(pullToRefresh);
+    }
+
+    @Override
+    public void showLoading(boolean pullToRefresh) {
+        super.showLoading(pullToRefresh);
+        swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.id.rv_items;
+    }
 }

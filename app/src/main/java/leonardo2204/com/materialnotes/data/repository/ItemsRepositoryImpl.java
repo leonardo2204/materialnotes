@@ -29,22 +29,22 @@ public class ItemsRepositoryImpl implements ItemsRepository {
         final RealmQuery<Checkboxes> queryCheck = realm.where(Checkboxes.class);
         final RealmQuery<ImageItem> queryImage = realm.where(ImageItem.class);
 
-        return queryCheck.findAll()
+        return queryCheck.findAllAsync()
                 .asObservable()
                 .flatMap(new Func1<RealmResults<Checkboxes>, Observable<RealmResults<ImageItem>>>() {
                     @Override
                     public Observable<RealmResults<ImageItem>> call(RealmResults<Checkboxes> checkboxes) {
                         for (Checkboxes checks : checkboxes)
-                            items.add(realm.copyFromRealm(checks));
+                            items.add(checks);
 
-                        return queryImage.findAll().asObservable();
+                        return queryImage.findAllAsync().asObservable();
                     }
                 })
                 .flatMap(new Func1<RealmResults<ImageItem>, Observable<List<Item>>>() {
                     @Override
                     public Observable<List<Item>> call(RealmResults<ImageItem> imageItems) {
                         for (ImageItem images : imageItems)
-                            items.add(realm.copyFromRealm(images));
+                            items.add(images);
 
                         return Observable.create(new Observable.OnSubscribe<List<Item>>() {
                             @Override

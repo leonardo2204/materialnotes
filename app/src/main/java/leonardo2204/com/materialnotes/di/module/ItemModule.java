@@ -8,6 +8,7 @@ import leonardo2204.com.materialnotes.domain.executor.PostExecutionThread;
 import leonardo2204.com.materialnotes.domain.executor.ThreadExecutor;
 import leonardo2204.com.materialnotes.domain.interactor.GetItemsUseCase;
 import leonardo2204.com.materialnotes.domain.repository.ItemsRepository;
+import leonardo2204.com.materialnotes.presenter.ItemsPresenter;
 
 /**
  * Created by leonardo on 7/29/16.
@@ -21,4 +22,11 @@ public class ItemModule {
     public GetItemsUseCase providesGetItemsUseCase(ItemsRepository itemsRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new GetItemsUseCase(itemsRepository, threadExecutor, postExecutionThread);
     }
+
+    @Provides
+    @DaggerScope(ItemComponent.class)
+    public ItemsPresenter providesItemsPresenter() {
+        return new ItemsPresenter();
+    }
+
 }
