@@ -46,6 +46,8 @@ public class ItemsPresenter extends MvpLceRxPresenter<ItemView, List<Item>> {
         subscribe(Observable.merge(
                 queryCheck.findAllAsync().asObservable(),
                 queryImage.findAllAsync().asObservable())
+                .filter(realmObjects -> realmObjects.isLoaded())
+                .filter(realmObjects -> realmObjects.isValid())
                 .map(new Func1<RealmResults<? extends RealmObject>, List<Item>>() {
                     @Override
                     public List<Item> call(RealmResults<? extends RealmObject> realmObjects) {

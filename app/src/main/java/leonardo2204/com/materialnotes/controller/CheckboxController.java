@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import leonardo2204.com.materialnotes.R;
@@ -27,6 +29,7 @@ import leonardo2204.com.materialnotes.di.component.CheckboxComponent;
 import leonardo2204.com.materialnotes.di.component.DaggerCheckboxComponent;
 import leonardo2204.com.materialnotes.model.CheckboxItem;
 import leonardo2204.com.materialnotes.model.Checkboxes;
+import leonardo2204.com.materialnotes.presenter.CheckboxPresenter;
 
 /**
  * Created by leonardo on 7/1/16.
@@ -34,12 +37,16 @@ import leonardo2204.com.materialnotes.model.Checkboxes;
 
 public class CheckboxController extends BaseController implements EndDrawableEditText.OnDrawableClickListener, CheckboxItemsAdapter.OnStartDragListener {
 
+    @Inject
+    protected CheckboxPresenter checkboxPresenter;
+
     @BindView(R.id.new_item)
     EndDrawableEditText newItemEditText;
     @BindView(R.id.rv_checks)
     RecyclerView rv_checks;
     @BindView(R.id.root_layout_checkbox)
     CoordinatorLayout coordinatorLayout;
+
     private CheckboxItemsAdapter adapter;
     private ItemTouchHelper itemTouchHelper;
     private Checkboxes checkboxNote = new Checkboxes();
@@ -113,16 +120,9 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
     }
 
     private void saveNote() {
-//        try {
-//            realm.beginTransaction();
-//            Checkboxes cbs = realm.createObject(Checkboxes.class);
-//            cbs.getItems().addAll(items);
-//            realm.commitTransaction();
-//            getRouter().popCurrentController();
-//        } catch (Exception e) {
-//            realm.cancelTransaction();
-//            Snackbar.make(getView(), "Erro ao criar checkbox", Snackbar.LENGTH_LONG).show();
-//        }
+        Checkboxes cbs = new Checkboxes();
+        cbs.getItems().addAll(items);
+        checkboxPresenter.saveCheckbox(cbs);
     }
 
     @Override
