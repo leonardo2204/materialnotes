@@ -23,11 +23,6 @@ public class CheckboxPresenter extends MvpBasePresenter<CheckboxView> implements
 
     @Override
     public void saveCheckbox(Checkboxes checkboxes) {
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.insertOrUpdate(checkboxes));
     }
 }

@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.Realm;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.CheckboxItemsAdapter;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
@@ -35,7 +36,7 @@ import leonardo2204.com.materialnotes.presenter.CheckboxPresenter;
  * Created by leonardo on 7/1/16.
  */
 
-public class CheckboxController extends BaseController implements EndDrawableEditText.OnDrawableClickListener, CheckboxItemsAdapter.OnStartDragListener {
+public class CheckboxController extends BaseController implements EndDrawableEditText.OnDrawableClickListener {
 
     @Inject
     protected CheckboxPresenter checkboxPresenter;
@@ -87,7 +88,7 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
     }
 
     private void setupRecyclerView() {
-        adapter = new CheckboxItemsAdapter(this);
+        adapter = new CheckboxItemsAdapter(viewHolder -> itemTouchHelper.startDrag(viewHolder));
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv_checks.setLayoutManager(llm);
         rv_checks.setHasFixedSize(true);
@@ -120,13 +121,8 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
     }
 
     private void saveNote() {
-        Checkboxes cbs = new Checkboxes();
+        Checkboxes cbs = Realm.getDefaultInstance().createObject(Checkboxes.class);
         cbs.getItems().addAll(items);
         checkboxPresenter.saveCheckbox(cbs);
-    }
-
-    @Override
-    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        itemTouchHelper.startDrag(viewHolder);
     }
 }
