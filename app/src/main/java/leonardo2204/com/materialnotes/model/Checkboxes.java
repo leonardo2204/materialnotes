@@ -1,16 +1,15 @@
 package leonardo2204.com.materialnotes.model;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
+import java.util.List;
 
 /**
  * Created by leonardo on 7/1/16.
  */
 
-public class Checkboxes extends RealmObject implements Item {
-    private RealmList<CheckboxItem> items;
+public class Checkboxes implements Item {
+    private List<CheckboxItem> items;
 
-    public RealmList<CheckboxItem> getItems() {
+    public List<CheckboxItem> getItems() {
         return items;
     }
 }

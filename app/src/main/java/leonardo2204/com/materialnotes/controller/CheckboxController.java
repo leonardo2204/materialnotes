@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.Realm;
 import leonardo2204.com.materialnotes.R;
 import leonardo2204.com.materialnotes.adapter.CheckboxItemsAdapter;
 import leonardo2204.com.materialnotes.controller.base.BaseController;
@@ -121,7 +120,7 @@ public class CheckboxController extends BaseController implements EndDrawableEdi
     }
 
     private void saveNote() {
-        Checkboxes cbs = Realm.getDefaultInstance().createObject(Checkboxes.class);
+        Checkboxes cbs = null;
         cbs.getItems().addAll(items);
         checkboxPresenter.saveCheckbox(cbs);
     }
